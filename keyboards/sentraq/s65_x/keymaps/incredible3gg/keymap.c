@@ -1,4 +1,13 @@
 #include QMK_KEYBOARD_H
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+enum custom_keycodes {
+    B_START = SAFE_RANGE,
+    W_START,
+};
 
 #define _BL 0
 #define _AL 1
@@ -10,15 +19,15 @@
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   /* 0: Main layer, swapped alt and GUI for Mac
    * ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───────┬───┐
-   * │GE │1 !│2 @│3 #│4 $│5 %│6 ^│7 &│8 *│9 (│0 )│- _│= +│Bksp   │Del│
+   * │GE │1 !│2 @│3 #│4 $│5 %│6 ^│7 &│8 *│9 (│0 )│- _│= +│Bksp   │`~ │
    * ├───┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─────┼───┤
-   * │Tab  │ Q │ W │ E │ R │ T │ Y │ U │ I │ O │ P │[ {│] }│\ |  │End│
+   * │Tab  │ Q │ W │ E │ R │ T │ Y │ U │ I │ O │ P │[ {│] }│\ |  │Del│
    * ├─────┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴─────┼───┤
    * │FnCaps│ A │ S │ D │ F │ G │ H │ J │ K │ L │; :│' "│Enter   │PUp│
    * ├──────┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴────┬───┼───┤
    * │Shift   │ Z │ X │ C │ V │ B │ N │ M │, <│. >│/ ?│Shift │Up │PDn│
    * ├────┬───┴┬──┴─┬─┴───┴───┴───┴───┴───┴──┬┴──┬┴──┬┴──┬───┼───┼───┤
-   * │Ctrl│GUI │Alt │Space                   │Alt│Fn │Ctl│Lft│Dwn│Rgt│
+   * │Ctrl│Alt │GUI │Space                   │Alt│Fn │Ctl│Lft│Dwn│Rgt│
    * └────┴────┴────┴────────────────────────┴───┴───┴───┴───┴───┴───┘
    */
 
@@ -28,7 +37,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC, KC_BSLS, KC_DEL,  \
     FL_CAPS, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,          KC_ENT,  KC_PGUP, \
     KC_LSFT,          KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSFT, KC_UP,   KC_PGDN, \
-    KC_LCTL, KC_LGUI, KC_LALT,                   KC_SPC,                             KC_RALT, MO(_FL), KC_RCTL, KC_LEFT, KC_DOWN, KC_RGHT  \
+    KC_LCTL, KC_LALT, KC_LGUI,                   KC_SPC,                             KC_RALT, MO(_FL), KC_RCTL, KC_LEFT, KC_DOWN, KC_RGHT  \
   ),
 
 
@@ -63,7 +72,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    * ├─────┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴┬──┴─────┼───┤
    * │      │Lft│Dwn│Rgt│   │   │Lft│Dwn│Up │Rgt│   │   │        │   │
    * ├──────┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴─┬─┴────┬───┼───┤
-   * │        │_UL│   │   │   │   │   │   │Hm │End│   │      │VUp│   │
+   * │        │_UL│   │   │   │BYK│   │   │Hm │End│   │      │VUp│   │
    * ├────┬───┴┬──┴─┬─┴───┴───┴───┴───┴───┴──┬┴──┬┴──┬┴──┬───┼───┼───┤
    * │    │    │    │                        │   │   │   │Mut│VDn│Ply│
    * └────┴────┴────┴────────────────────────┴───┴───┴───┴───┴───┴───┘
@@ -73,7 +82,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_GRV,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  _______, _______, \
     _______, TG(_AL), KC_UP,   _______, _______, _______, _______, _______, KC_PGUP, KC_PGDN, KC_PSCR, KC_SLCK, KC_PAUS, _______, _______, \
     _______, KC_LEFT, KC_DOWN, KC_RGHT, _______, _______, KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, _______, _______,          _______, _______, \
-    _______,          TG(_UL), _______, _______, _______, _______, _______, _______, KC_HOME, KC_END,  _______, _______, KC_VOLU, _______, \
+    _______,     TG(_UL), _______, _______, _______, B_START, _______, _______, KC_HOME, KC_END,  _______, _______, KC_VOLU, _______, \
     _______, _______, _______,                   _______,                            _______, _______, _______, KC_MUTE, KC_VOLD, KC_MPLY  \
   ),
 
@@ -100,3 +109,37 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______, _______, _______,                   _______,                            _______, _______, _______, _______, _______, _______  \
   ),
 };
+
+
+char beyonkle[18] = "beyonkle";
+
+void gen_beyonkle(bool rCaps) {
+  beyonkle[0] = 'b';
+  uint8_t numEs = rand() % 8 + 2;
+  for (uint8_t i = 1; i <= numEs; i++) {
+    beyonkle[i] = 'e';
+  }
+  strcpy(beyonkle + numEs +1,"yonkle\n");
+  uint8_t i=0;
+  while (beyonkle[i]) {
+    if (rand() % 100 < 30) {
+      beyonkle[i] = toupper(beyonkle[i]);
+    }
+    i++;
+  }
+}
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+    case B_START:
+        if (record->event.pressed) {
+            // when keycode B_START is pressed
+            gen_beyonkle(true);
+            send_string(beyonkle);
+        } else {
+            // when keycode B_START is released
+        }
+        break;
+    }
+    return true;
+}
